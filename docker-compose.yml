@@ -1,0 +1,9 @@
+services:
+  pokedex-api:
+    build: ./pokedex-api
+    container_name: pokedex-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
