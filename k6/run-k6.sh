@@ -1,0 +1,1 @@
+docker run --rm -i -e grafana/k6 run - < ./performance_tests.js
