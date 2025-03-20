@@ -7,5 +7,5 @@ public class PokemonDTO {
     String name;
     String description;
     String habitat;
-    String status;
+    Boolean isLegendary;
 }
