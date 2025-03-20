@@ -4,7 +4,6 @@ import com.skav.pokedex.controller.interfaces.PokemonController;
 import com.skav.pokedex.converter.interfaces.PokemonConverter;
 import com.skav.pokedex.dto.PokemonDTO;
 import com.skav.pokedex.response.HttpResponse;
-import com.skav.pokedex.service.impl.TranslationServiceImpl;
 import com.skav.pokedex.service.interfaces.PokemonService;
 import com.skav.pokedex.service.interfaces.TranslationService;
 import org.slf4j.Logger;

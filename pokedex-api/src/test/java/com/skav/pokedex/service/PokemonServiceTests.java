@@ -2,7 +2,6 @@ package com.skav.pokedex.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.skav.pokedex.service.impl.PokemonServiceImpl;
 import com.skav.pokedex.service.interfaces.PokemonService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -41,13 +40,13 @@ public class PokemonServiceTests {
 
         assertNotNull(result);
         Map<String, Object> color = (Map<String, Object>) result.get("color");
-        assertEquals(color.get("name"),"yellow");
+        assertEquals(color.get("name"), "yellow");
 
-        assertEquals(result.get("is_legendary"),false);
+        assertEquals(result.get("is_legendary"), false);
 
         Map<String, Object> habitat = (Map<String, Object>) result.get("habitat");
         assertNotNull(habitat);
-        assertEquals(habitat.get("name"),"forest");
+        assertEquals(habitat.get("name"), "forest");
 
         //FIXME add assertions
     }

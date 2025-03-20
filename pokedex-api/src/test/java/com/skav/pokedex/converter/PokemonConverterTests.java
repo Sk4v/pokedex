@@ -2,7 +2,6 @@ package com.skav.pokedex.converter;
 
 import com.skav.pokedex.converter.interfaces.PokemonConverter;
 import com.skav.pokedex.dto.PokemonDTO;
-import com.skav.pokedex.service.PokemonServiceTests;
 import com.skav.pokedex.service.interfaces.PokemonService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -34,8 +33,8 @@ public class PokemonConverterTests {
 
         PokemonDTO pokemon = pokemonConverter.fromMapToPokemonDTO(result);
         assertNotNull(pokemon);
-        assertEquals(pokemon.getDescription(), "When several of\nthese POKéMON\ngather, their\felectricity could\nbuild and cause\nlightning storms." );
-        assertEquals(pokemon.getHabitat(), "forest" );
-        assertEquals(pokemon.getIsLegendary(),false );
+        assertEquals(pokemon.getDescription(), "When several of\nthese POKéMON\ngather, their\felectricity could\nbuild and cause\nlightning storms.");
+        assertEquals(pokemon.getHabitat(), "forest");
+        assertEquals(pokemon.getIsLegendary(), false);
     }
 }

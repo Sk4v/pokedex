@@ -20,7 +20,7 @@ public class PokemonControllerTests {
     PokemonController pokemonController;
 
     @Test
-    void testGetPokemonByName(){
+    void testGetPokemonByName() {
         String pokemonName = "pikachu";
         HttpResponse<PokemonDTO> response = pokemonController.getPokemonByName(pokemonName);
 
@@ -31,21 +31,21 @@ public class PokemonControllerTests {
         expectedPokemon.setIsLegendary(false);
 
         assertNotNull(response);
-        assertEquals(response.getStatus(),"OK");
+        assertEquals(response.getStatus(), "OK");
         assertEquals(response.getData(), expectedPokemon);
         assertEquals(response.getMessage(), null);
     }
 
     @Test
-    void testTranslatedPokemonByName(){
+    void testTranslatedPokemonByName() {
     }
 
     @Test
-    void testGetPokemonByNameNotFound(){
+    void testGetPokemonByNameNotFound() {
     }
 
     @Test
-    void testTranslatedPokemonByNameNotFound(){
+    void testTranslatedPokemonByNameNotFound() {
     }
 
 }

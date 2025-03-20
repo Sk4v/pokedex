@@ -1,6 +1,5 @@
 package com.skav.pokedex.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skav.pokedex.service.interfaces.TranslationService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
