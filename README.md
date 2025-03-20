@@ -15,8 +15,6 @@ docker compose up -d
 The project also contains a `Dockerfile` inside the pokedex-api dir.
 
 ## Approach
-The service has been designed with the intent to easily add more features over time.
-
 Simulating that this project is a serious one that will be maintained in the long term and deployed in production at a client’s site, the following procedures and approach are described.
 
 These are the following points
@@ -27,7 +25,11 @@ These are the following points
 4. *OWASP SCA Analysis*
 5. *Automatic Coding Linting & refactoring*
 
-### 1. OpenAPI & SWAGGER
+### 1. Documentation, OpenAPI & SWAGGER
+#### `Documentation`
+Into the `pokedex-api dir.` there is a README.md with a sample of `documentation`. It is based on `ARC-42 template` and allow me to describe very importants details like my architectural decision and the context of my system. 
+
+#### `OpenAPI & SWAGGER`
 The API provides two endpoints:
 1. `http://localhost:8080/api-docs` which provides the file in the OpenAPI standard.
 2. `http://localhost:8080/swagger-ui/index.html` which provides the Swagger UI interface that reads the OpenAPI.json file.
@@ -38,8 +40,38 @@ This approach allow me to (example):
 - I can generate automatically differents client call (ex. using OpenAPI-generator)
 
 ### 2. Monitoring
+Spring Boot allows me to use `actuator`, which provides access to essential application metrics. In this case, I have chosen to include the `micrometer-registry-prometheus` dependency to expose my metrics in the Prometheus format.
+In the `docker-compose.yml` file, I have included the Prometheus service, which allows me to collect the metrics exposed by the `actuator`. We can also import this metrics inside a Grafana dashboard and monitor the service over the time. 
+
 ### 3. Application Tests (Java)
+I decided to test my system in different ways.
+I created end-to-end (E2E) tests for my services and REST controllers.
+Additionally, I implemented integration tests to verify the behavior of my services.
+
 ### 3.1 Performance tests
-### 4. OWASP SCA Analysis
+I used `grafana-k6` for performance testing.  
+As an example, I created a very basic performance test.  
+`K6` allows me to define different types of performance tests, and I can easily integrate it into a CI/CD pipeline.
+
+### 4. OWASP SCA Analysis  
+I used the `dependency-check` Maven plugin for SCA (Software Composition Analysis). This allows me to detect common vulnerabilities in dependencies.  
+
+Inside the `pokedex-api` directory, running the following command:  
+```bash
+mvn verify -Psecurity
+```
+the plugin generates the `dependency-check-report.html` file under the `target` directory.
+
 ### 5. Automatic Coding Linting & refactoring
+I added the `openrewrite` Maven plugin to perform optimizations such as Java linting and import optimization. Additionally, it can automatically refactor the codebase by applying best practices, improving maintainability, and ensuring consistency across the project.
+
+Inside the `pokedex-api` directory, running the following command:  
+```bash
+mvn verify -Popenrewrite
+```
+You can see an example on commit `refactoring + minor fix`
+
+### Observations
+The steps described above are intended to be easy to insert into `CI/CD pipelines` so that you can constantly monitor the evolution of the project over time.
+
 
