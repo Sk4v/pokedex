@@ -18,8 +18,7 @@ The Pokedex is a backend system built with **Java 17** and **Spring 3**. It inte
 - **PokeAPI** to fetch detailed data about Pokémon.
 - **Funtranslations API** to handle translation requests (Yoda and Shakespeare styles).
 
-The system will expose a set of RESTful endpoints to retrieve Pokémon information, with support for translation as required. Additionally, the project demonstrates how to handle asynchronous calls to external services using `CompletableFuture` in Java.
-
+The system will expose a set of RESTful endpoints to retrieve Pokémon information, with support for translation as required.
 ## 3. Solution Strategy
 
 ### 3.1 Architecture Overview
@@ -40,7 +39,6 @@ The system will expose a set of RESTful endpoints to retrieve Pokémon informati
   
 ## 4. Architecture Decisions
 
-- **Async Handling**: We use `CompletableFuture` to handle asynchronous calls to external APIs, allowing non-blocking I/O operations.
 - **Separation of Concerns**: The Pokémon-related logic is isolated in the `PokemonService`, while the translation logic is managed by the `TranslationService`.
 
 ## 5. System Requirements
@@ -71,25 +69,19 @@ The system will expose a set of RESTful endpoints to retrieve Pokémon informati
 - **GET /pokemon/translated/{name}**
   - Retrieves the Pokémon information and the translated description (either Yoda or Shakespeare).
 
-## 9. Quality Requirements
+## 7. Quality Requirements
 
-### 9.1 Performance
+### 7.1 Performance
 
-- The API should be able to handle requests with minimal delay by using asynchronous calls to external services.
+- I use K6 to tests my performance. 
 
-### 9.2 Security
+### 7.2 Security
 
-- Secure all endpoints with basic authentication or OAuth, depending on the use case.
-- Validate all user inputs to avoid malicious data entering the system.
+- Monitor the system with a continuos inspect of CVE using dependecy-check plugin.
 
-### 9.3 Reliability
+## 8. Deployment
 
-- Ensure the system has graceful error handling and fallback strategies if either external service is down.
-- Include logging and monitoring to detect failures quickly.
-
-## 10. Deployment
-
-### 10.1 Local Setup
+### 8.1 Local Setup
 
 To run the application locally:
 
@@ -97,7 +89,7 @@ To run the application locally:
 2. Run `mvn clean install` to build the project.
 3. Start the Spring Boot application with `mvn spring-boot:run`.
 
-### 10.2 Docker Setup
+### 8.2 Docker Setup
 
 To run the application using Docker:
 
@@ -105,11 +97,3 @@ To run the application using Docker:
    `docker build -t pokedex .`
 2. Run the application:  
    `docker run -p 8080:8080 pokedex`
-
-## 11. Conclusion
-
-This project demonstrates how to integrate multiple external APIs and handle asynchronous operations within a Spring Boot application. It also shows how to create a simple translation system based on Pokémon attributes, allowing users to enjoy their favorite Pokémon in various fictional languages.
-
----
-
-This README includes sections from the arc42 template, detailing the system architecture, user stories, external APIs, and more. Feel free to adjust or expand on any part of the document based on the project specifics.
