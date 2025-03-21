@@ -29,7 +29,7 @@ public class PokemonConverterTests {
     void testPokemonConverter() throws ExecutionException, InterruptedException {
         String pokemonName = "pikachu";
         logger.info("Get pokemon information for: {}", pokemonName);
-        Map<String, Object> result = pokemonService.getPokemonSpecies(pokemonName).get();
+        Map<String, Object> result = pokemonService.getPokemonSpecies(pokemonName);
 
         PokemonDTO pokemon = pokemonConverter.fromMapToPokemonDTO(result);
         assertNotNull(pokemon);

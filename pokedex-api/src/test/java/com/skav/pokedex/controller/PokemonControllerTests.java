@@ -44,7 +44,7 @@ public class PokemonControllerTests {
 
         assertNotNull(response);
         assertEquals(response.getStatus(), "OK");
-        assertEquals(response.getMessage(), null);
+        assertTrue(response.getMessage().startsWith("429"));
         assertEquals(response.getData().getName(), pokemonName);
         assertEquals(response.getData().getHabitat(), "forest");
         assertEquals(response.getData().getIsLegendary(), false);

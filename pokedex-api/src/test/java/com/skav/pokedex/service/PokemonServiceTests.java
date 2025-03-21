@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
@@ -20,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@EnableAsync
 public class PokemonServiceTests {
 
     private static final Logger logger = LoggerFactory.getLogger(PokemonServiceTests.class);
@@ -36,7 +34,7 @@ public class PokemonServiceTests {
         * This tests control if the response contains what I need. */
         String pokemonName = "pikachu";
         logger.info("Get pokemon information for: {}", pokemonName);
-        Map<String, Object> result = pokemonService.getPokemonSpecies(pokemonName).get();
+        Map<String, Object> result = pokemonService.getPokemonSpecies(pokemonName);
 
         assertNotNull(result);
         Map<String, Object> color = (Map<String, Object>) result.get("color");
@@ -47,8 +45,7 @@ public class PokemonServiceTests {
         Map<String, Object> habitat = (Map<String, Object>) result.get("habitat");
         assertNotNull(habitat);
         assertEquals(habitat.get("name"), "forest");
-
-        //FIXME add assertions
+        assertEquals(result.get("name"), pokemonName);
     }
 
     @Test
@@ -58,7 +55,7 @@ public class PokemonServiceTests {
         * Allow me to monitor if something change over the time. */
 
         String pokemonName = "pikachu";
-        Map<String, Object> actualResult = pokemonService.getPokemonSpecies(pokemonName).get();
+        Map<String, Object> actualResult = pokemonService.getPokemonSpecies(pokemonName);
         assertNotNull(actualResult);
 
         InputStream expectedJsonStream = new ClassPathResource("e2e/pikachu.json").getInputStream();
@@ -75,13 +72,11 @@ public class PokemonServiceTests {
     void testGetPokemonSpeciesNotFound() {
         String pokemonName = "POKEMON_NOT_FOUND";
 
-        ExecutionException exception = assertThrows(ExecutionException.class, () -> {
-            pokemonService.getPokemonSpecies(pokemonName).get();
+        HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () -> {
+            pokemonService.getPokemonSpecies(pokemonName);
         });
-        assertTrue(exception.getCause() instanceof HttpClientErrorException.NotFound);
-        HttpClientErrorException.NotFound notFoundException = (HttpClientErrorException.NotFound) exception.getCause();
-        assertTrue(notFoundException.getMessage().startsWith("404 Not Found"));
+        assertTrue(exception.getMessage().startsWith("404 Not Found"));
 
-        logger.info("Expected exception: {}", notFoundException.getMessage());
+        logger.info("Expected exception: {}", exception.getMessage());
     }
 }

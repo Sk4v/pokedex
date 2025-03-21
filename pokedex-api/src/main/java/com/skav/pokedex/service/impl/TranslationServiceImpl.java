@@ -26,20 +26,18 @@ public class TranslationServiceImpl extends AbstractService implements Translati
     private String yoda;
 
     @Override
-    public  CompletableFuture<Map<String, Object>> shakespeareTranslate(String text) {
+    public Map<String, Object> shakespeareTranslate(String text) {
         URI uri = URI.create(String.format("%s/%s", translationsBaseUrl, shakespeare));
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("text", text);
-        Map<String, Object> data = mapResponseFromPostRequest(uri, requestBody);
-        return CompletableFuture.completedFuture(data);
+        return mapResponseFromPostRequest(uri, requestBody);
     }
 
     @Override
-    public  CompletableFuture<Map<String, Object>> yodaTranslate(String text) {
+    public Map<String, Object> yodaTranslate(String text) {
         URI uri = URI.create(String.format("%s/%s", translationsBaseUrl, yoda));
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("text", text);
-        Map<String, Object> data = mapResponseFromPostRequest(uri, requestBody);
-        return CompletableFuture.completedFuture(data);
+        return mapResponseFromPostRequest(uri, requestBody);
     }
 }

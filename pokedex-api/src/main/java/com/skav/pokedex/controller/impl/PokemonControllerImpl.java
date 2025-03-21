@@ -2,6 +2,7 @@ package com.skav.pokedex.controller.impl;
 
 import com.skav.pokedex.controller.interfaces.PokemonController;
 import com.skav.pokedex.converter.interfaces.PokemonConverter;
+import com.skav.pokedex.converter.interfaces.TranslationConverter;
 import com.skav.pokedex.dto.PokemonDTO;
 import com.skav.pokedex.response.HttpResponse;
 import com.skav.pokedex.service.interfaces.PokemonService;
@@ -25,6 +26,8 @@ public class PokemonControllerImpl implements PokemonController {
     PokemonConverter pokemonConverter;
     @Autowired
     PokemonService pokemonService;
+    @Autowired
+    TranslationConverter translationConverter;
 
     private static final Logger logger = LoggerFactory.getLogger(PokemonControllerImpl.class);
 
@@ -35,13 +38,12 @@ public class PokemonControllerImpl implements PokemonController {
 
         HttpResponse<PokemonDTO> response = new HttpResponse();
         try {
-            CompletableFuture<Map<String, Object>> pokemonFuture = pokemonService.getPokemonSpecies(name);
-            Map<String, Object> pokemonDetails = pokemonFuture.get();
+            Map<String, Object> pokemonDetails = pokemonService.getPokemonSpecies(name);
             PokemonDTO pokemonDTO = pokemonConverter.fromMapToPokemonDTO(pokemonDetails);
 
             response.setStatus("OK");
             response.setData(pokemonDTO);
-        } catch (InterruptedException | ExecutionException | HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             logger.error("Error {}", e.getMessage());
             response.setStatus("KO");
             response.setMessage(e.getMessage());
@@ -61,38 +63,45 @@ public class PokemonControllerImpl implements PokemonController {
         logger.info("Get Pokemon information and traslation for: {}", name);
 
         HttpResponse<PokemonDTO> response = new HttpResponse();
+        PokemonDTO pokemonDTO = null;
+        Map<String, Object> translationMap = null;
+
+        //Retrieve pokemon information
         try {
-            CompletableFuture<Map<String, Object>> pokemonFuture = pokemonService.getPokemonSpecies(name);
-            Map<String, Object> pokemonDetails = pokemonFuture.get();
-            PokemonDTO pokemonDTO = pokemonConverter.fromMapToPokemonDTO(pokemonDetails);
-
-            if (pokemonDTO.getHabitat().equalsIgnoreCase("cave") || pokemonDTO.getIsLegendary()) {
-                logger.info("Translate Pokemon description with YODA translation");
-                translationService.yodaTranslate(pokemonDTO.getDescription())
-                        .exceptionally(ex -> {
-                            logger.error("Yoda translation failed: {}", ex.getMessage());
-                            return Map.of("contents", Map.of("translated", pokemonDTO.getDescription()));
-                        })
-                        .thenAccept(data -> pokemonDTO.setDescription((String) ((Map<String, Object>) data.get("contents")).get("translated")));
-            } else {
-                translationService.shakespeareTranslate(pokemonDTO.getDescription())
-                        .exceptionally(ex -> {
-                            logger.error("Shakespeare translation failed: {}", ex.getMessage());
-                            return Map.of("contents", Map.of("translated", pokemonDTO.getDescription()));
-                        })
-                        .thenAccept(data -> pokemonDTO.setDescription((String) ((Map<String, Object>) data.get("contents")).get("translated")));
-            }
-
-            response.setStatus("OK");
-            response.setData(pokemonDTO);
-
-        } catch (InterruptedException | ExecutionException | HttpClientErrorException e) {
+            Map<String, Object> pokemonDetails = pokemonService.getPokemonSpecies(name);
+            pokemonDTO = pokemonConverter.fromMapToPokemonDTO(pokemonDetails);
+        }catch (HttpClientErrorException e) {
             logger.error("Error {}", e.getMessage());
             response.setStatus("KO");
             response.setMessage(e.getMessage());
+            logger.info("Response: {}", response);
+            return response;
         }
 
+        //Try to translate pokemon description
+        try{
+            if (pokemonDTO.getHabitat().equalsIgnoreCase("cave") || pokemonDTO.getIsLegendary()) {
+                logger.info("Translate Pokemon description with YODA translation");
+                translationMap = translationService.yodaTranslate(pokemonDTO.getDescription());
+            } else {
+                logger.info("Translate Pokemon description with SHAKESPEARE translation");
+                translationMap = translationService.shakespeareTranslate(pokemonDTO.getDescription());
+            }
+        }catch (HttpClientErrorException e){
+            logger.error("Error {}", e.getMessage());
+            response.setMessage(e.getMessage());
+        }
+
+        //Change the default translation with the transleted one
+        if(translationMap != null){
+            String translatedDescription = translationConverter.fromMapToString(translationMap);
+            pokemonDTO.setDescription(translatedDescription);
+        }
+
+        response.setStatus("OK");
+        response.setData(pokemonDTO);
         logger.info("Response: {}", response);
+
         return response;
     }
 }

@@ -17,7 +17,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,7 +50,7 @@ public class PokemonControllerIntegrationTest {
 
         Map<String, Object> pokemonDetails = generateMap("e2e/pikachu.json");
 
-        when(pokemonService.getPokemonSpecies(pokemonName)).thenReturn(CompletableFuture.completedFuture(pokemonDetails));
+        when(pokemonService.getPokemonSpecies(pokemonName)).thenReturn(pokemonDetails);
 
         mockMvc.perform(get("/pokemon/{name}", pokemonName))
                 .andExpect(status().isOk())
