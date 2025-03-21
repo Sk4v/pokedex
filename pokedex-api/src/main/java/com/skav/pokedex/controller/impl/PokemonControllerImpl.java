@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -31,16 +32,16 @@ public class PokemonControllerImpl implements PokemonController {
     public HttpResponse<PokemonDTO> getPokemonByName(String name) {
         /*Given a Pokemon name, returns standard Pokemon description and additional information.*/
         logger.info("Get Pokemon information for: {}", name);
-        CompletableFuture<Map<String, Object>> pokemonFuture = pokemonService.getPokemonSpecies(name);
 
         HttpResponse<PokemonDTO> response = new HttpResponse();
         try {
+            CompletableFuture<Map<String, Object>> pokemonFuture = pokemonService.getPokemonSpecies(name);
             Map<String, Object> pokemonDetails = pokemonFuture.get();
             PokemonDTO pokemonDTO = pokemonConverter.fromMapToPokemonDTO(pokemonDetails);
+
             response.setStatus("OK");
             response.setData(pokemonDTO);
-
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | HttpClientErrorException e) {
             logger.error("Error {}", e.getMessage());
             response.setStatus("KO");
             response.setMessage(e.getMessage());
@@ -57,8 +58,41 @@ public class PokemonControllerImpl implements PokemonController {
         1. If the Pokemon’s habitat is cave or it’s a legendary Pokemon then apply the Yoda translation.
         2. For all other Pokemon, apply the Shakespeare translation.
         3. If you can’t translate the Pokemon’s description then use the standard description*/
+        logger.info("Get Pokemon information and traslation for: {}", name);
 
-        HttpResponse response = new HttpResponse();
+        HttpResponse<PokemonDTO> response = new HttpResponse();
+        try {
+            CompletableFuture<Map<String, Object>> pokemonFuture = pokemonService.getPokemonSpecies(name);
+            Map<String, Object> pokemonDetails = pokemonFuture.get();
+            PokemonDTO pokemonDTO = pokemonConverter.fromMapToPokemonDTO(pokemonDetails);
+
+            if (pokemonDTO.getHabitat().equalsIgnoreCase("cave") || pokemonDTO.getIsLegendary()) {
+                logger.info("Translate Pokemon description with YODA translation");
+                translationService.yodaTranslate(pokemonDTO.getDescription())
+                        .exceptionally(ex -> {
+                            logger.error("Yoda translation failed: {}", ex.getMessage());
+                            return Map.of("contents", Map.of("translated", pokemonDTO.getDescription()));
+                        })
+                        .thenAccept(data -> pokemonDTO.setDescription((String) ((Map<String, Object>) data.get("contents")).get("translated")));
+            } else {
+                translationService.shakespeareTranslate(pokemonDTO.getDescription())
+                        .exceptionally(ex -> {
+                            logger.error("Shakespeare translation failed: {}", ex.getMessage());
+                            return Map.of("contents", Map.of("translated", pokemonDTO.getDescription()));
+                        })
+                        .thenAccept(data -> pokemonDTO.setDescription((String) ((Map<String, Object>) data.get("contents")).get("translated")));
+            }
+
+            response.setStatus("OK");
+            response.setData(pokemonDTO);
+
+        } catch (InterruptedException | ExecutionException | HttpClientErrorException e) {
+            logger.error("Error {}", e.getMessage());
+            response.setStatus("KO");
+            response.setMessage(e.getMessage());
+        }
+
+        logger.info("Response: {}", response);
         return response;
     }
 }

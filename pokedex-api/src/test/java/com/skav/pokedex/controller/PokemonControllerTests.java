@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class PokemonControllerTests {
@@ -21,6 +20,7 @@ public class PokemonControllerTests {
 
     @Test
     void testGetPokemonByName() {
+        /*End to end test for testing first endpoint */
         String pokemonName = "pikachu";
         HttpResponse<PokemonDTO> response = pokemonController.getPokemonByName(pokemonName);
 
@@ -38,14 +38,40 @@ public class PokemonControllerTests {
 
     @Test
     void testTranslatedPokemonByName() {
+        /*End to end test for testing second endpoint */
+        String pokemonName = "pikachu";
+        HttpResponse<PokemonDTO> response = pokemonController.getTranslatedPokemonByName(pokemonName);
+
+        assertNotNull(response);
+        assertEquals(response.getStatus(), "OK");
+        assertEquals(response.getMessage(), null);
+        assertEquals(response.getData().getName(), pokemonName);
+        assertEquals(response.getData().getHabitat(), "forest");
+        assertEquals(response.getData().getIsLegendary(), false);
     }
 
     @Test
     void testGetPokemonByNameNotFound() {
+        /*End to end test for testing first endpoint with no existing pokemon*/
+        String pokemonName = "POKEMON_NOT_FOUND";
+        HttpResponse<PokemonDTO> response = pokemonController.getPokemonByName(pokemonName);
+
+        assertNotNull(response);
+        assertEquals(response.getStatus(), "KO");
+        assertNotNull(response.getMessage());
+        assertTrue(response.getMessage().startsWith("404"));
     }
 
     @Test
     void testTranslatedPokemonByNameNotFound() {
+        /*End to end test for testing second endpoint with no existing pokemon*/
+        String pokemonName = "POKEMON_NOT_FOUND";
+        HttpResponse<PokemonDTO> response = pokemonController.getTranslatedPokemonByName(pokemonName);
+
+        assertNotNull(response);
+        assertEquals(response.getStatus(), "KO");
+        assertNotNull(response.getMessage());
+        assertTrue(response.getMessage().startsWith("404"));
     }
 
 }

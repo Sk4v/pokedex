@@ -30,10 +30,10 @@ public class PokemonServiceTests {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    //TODO add tests descriptions
-
     @Test
     void testGetPokemonSpecies() throws ExecutionException, InterruptedException {
+        /*End-to-end test for pokemon service (pokemon species).
+        * This tests control if the response contains what I need. */
         String pokemonName = "pikachu";
         logger.info("Get pokemon information for: {}", pokemonName);
         Map<String, Object> result = pokemonService.getPokemonSpecies(pokemonName).get();
@@ -53,6 +53,10 @@ public class PokemonServiceTests {
 
     @Test
     void testGetPokemonSpeciesE2e() throws IOException, ExecutionException, InterruptedException {
+        /*End-to-end test for pokemon service (species endpoint).
+        * This test compare the result with a .json file that contains the expected response.
+        * Allow me to monitor if something change over the time. */
+
         String pokemonName = "pikachu";
         Map<String, Object> actualResult = pokemonService.getPokemonSpecies(pokemonName).get();
         assertNotNull(actualResult);
