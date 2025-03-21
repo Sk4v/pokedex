@@ -2,6 +2,8 @@ import http from 'k6/http';
 import { check } from 'k6';
 import { SharedArray } from 'k6/data';
 
+//This is an example file of K6-tests with a basic configuration.
+
 const BASE_URL = 'http://pokedex-api:8080';
 
 const pokemonNames = new SharedArray('pokemon names', function () {
